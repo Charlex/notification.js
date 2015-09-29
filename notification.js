@@ -19,51 +19,6 @@
 	
 	var a = [], iv, i=0;
 
-	//
-	// Swap the document.title with the notification
-	//
-	function swaptitle(title){
-	
-		if(a.length===0){
-			a = [document.title];
-		}
-
-		a.push(title);
-
-		if(!iv){
-			iv = setInterval(function(){
-
-				// has document.title changed externally?
-				if(a.indexOf(document.title) === -1 ){
-					// update the default title
-					a[0] = document.title;
-				}
-				
-				document.title = a[++i%a.length];
-			}, 1000);
-		}
-	}
-
-	function swapTitleCancel(){
-
-		// dont do any more if we haven't got anything open
-		if(a.length===0){
-			return;
-		}
-		
-		// if an IE overlay is present, kill it
-		if("external" in window && "msSiteModeClearIconOverlay" in window.external ){
-			window.external.msSiteModeClearIconOverlay();
-		}
-
-		clearInterval(iv);
-		
-		iv = false;
-		document.title = a[0];
-		a = [];
-	}
-	
-	//
 	// Add aevent handlers
 	function addEvent(el,name,func){
 		if(name.match(" ")){
@@ -113,9 +68,6 @@
 
 	if(!Object(window.Notification).permission){
 
-		//
-		// Bind event handlers to the body
-		addEvent(window, "focus scroll click", swapTitleCancel);
 
 		// Assign it.
 		window.Notification = function(message, options){
@@ -136,9 +88,6 @@
 			this.tag = options.tag || '';
 			this.close = function(){
 
-				// remove swapTitle
-				swapTitleCancel();
-
 				// Close
 				if(Object(n).close){
 					n.close();
@@ -148,11 +97,6 @@
 			};
 			this.onclick = function(){};
 			this.onclose = function(){};
-
-			//
-			// Swap document.title
-			//
-			swaptitle(message);
 
 			//
 			// Create Desktop Notifications
